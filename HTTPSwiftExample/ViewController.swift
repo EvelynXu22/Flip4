@@ -15,12 +15,14 @@
 //    ifconfig |grep inet   
 // to see what your public facing IP address is, the ip address can be used here
 //let SERVER_URL = "http://erics-macbook-pro.local:8000" // change this for your server name!!!
-let SERVER_URL = "http://10.0.1.6:8000" // change this for your server name!!!
+let SERVER_URL = "http://192.168.0.93:8000" // change this for your server name!!!
 
 import UIKit
 import CoreMotion
 
 class ViewController: UIViewController, URLSessionDelegate {
+    
+    
     
     // MARK: Class Properties
     lazy var session: URLSession = {
@@ -48,6 +50,7 @@ class ViewController: UIViewController, URLSessionDelegate {
     
     var isWaitingForMotionData = false
     
+    @IBOutlet weak var dsidInput: UITextField!
     @IBOutlet weak var dsidLabel: UILabel!
     @IBOutlet weak var upArrow: UILabel!
     @IBOutlet weak var rightArrow: UILabel!
@@ -129,6 +132,11 @@ class ViewController: UIViewController, URLSessionDelegate {
     
     @IBAction func magnitudeChanged(_ sender: UISlider) {
         self.magValue = Double(sender.value)
+    }
+    
+    // Hide the keyboard
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(false)
     }
     
     // MARK: Core Motion Updates
@@ -263,7 +271,13 @@ class ViewController: UIViewController, URLSessionDelegate {
         // create a GET request for a new DSID from server
         let baseURL = "\(SERVER_URL)/GetNewDatasetId"
         
-        let getUrl = URL(string: baseURL)
+//        let getUrl = URL(string: baseURL)
+        let textfield2Int: Int? = Int(self.dsidInput.text!)
+
+        // Set selected dsid from text field
+        self.dsid = textfield2Int!
+        let query = "?dsid=\(self.dsid)"
+        let getUrl = URL(string: baseURL+query)
         let request: URLRequest = URLRequest(url: getUrl!)
         let dataTask : URLSessionDataTask = self.session.dataTask(with: request,
             completionHandler:{(data, response, error) in
@@ -274,9 +288,9 @@ class ViewController: UIViewController, URLSessionDelegate {
                     let jsonDictionary = self.convertDataToDictionary(with: data)
                     
                     // This better be an integer
-                    if let dsid = jsonDictionary["dsid"]{
-                        self.dsid = dsid as! Int
-                    }
+//                    if let dsid = jsonDictionary["dsid"]{
+//                        self.dsid = dsid as! Int
+//                    }
                 }
                 
         })

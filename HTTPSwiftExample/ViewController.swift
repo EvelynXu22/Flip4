@@ -16,7 +16,7 @@
 // to see what your public facing IP address is, the ip address can be used here
 //let SERVER_URL = "http://erics-macbook-pro.local:8000" // change this for your server name!!!
 let SERVER_URL = "http://192.168.0.93:8000" // change this for your server name!!!
-let AUDIO_BUFFER_SIZE = 800
+let AUDIO_BUFFER_SIZE = 150
 
 
 import UIKit

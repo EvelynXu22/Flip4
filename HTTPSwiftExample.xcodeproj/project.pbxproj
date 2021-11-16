@@ -320,7 +320,7 @@
 				INFOPLIST_FILE = HTTPSwiftExample/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = wyx.HTTPSwiftExample;
+				PRODUCT_BUNDLE_IDENTIFIER = xywww.HTTPSwiftExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "HTTPSwiftExample/HTTPSwiftExample-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -337,7 +337,7 @@
 				INFOPLIST_FILE = HTTPSwiftExample/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = wyx.HTTPSwiftExample;
+				PRODUCT_BUNDLE_IDENTIFIER = xywww.HTTPSwiftExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "HTTPSwiftExample/HTTPSwiftExample-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

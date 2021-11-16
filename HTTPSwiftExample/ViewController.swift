@@ -56,10 +56,12 @@ class ViewController: UIViewController, URLSessionDelegate {
     
     @IBOutlet weak var dsidInput: UITextField!
     @IBOutlet weak var dsidLabel: UILabel!
-    @IBOutlet weak var upArrow: UILabel!
-    @IBOutlet weak var rightArrow: UILabel!
-    @IBOutlet weak var downArrow: UILabel!
-    @IBOutlet weak var leftArrow: UILabel!
+//    @IBOutlet weak var upArrow: UILabel!
+    @IBOutlet weak var switchLabel: UILabel!
+    @IBOutlet weak var ahLabel: UILabel!
+//    @IBOutlet weak var rightArrow: UILabel!
+//    @IBOutlet weak var downArrow: UILabel!
+//    @IBOutlet weak var leftArrow: UILabel!
     @IBOutlet weak var largeMotionMagnitude: UIProgressView!
     
     // MARK: Class Properties with Observers
@@ -67,8 +69,6 @@ class ViewController: UIViewController, URLSessionDelegate {
         case notCalibrating
         case Switch
         case Ah
-//        case down
-//        case left
     }
     
     var calibrationStage:CalibrationStage = .notCalibrating {
@@ -77,41 +77,22 @@ class ViewController: UIViewController, URLSessionDelegate {
             case .Switch:
                 self.isCalibrating = true
                 DispatchQueue.main.async{
-                    self.setAsCalibrating(self.leftArrow)
-                    self.setAsNormal(self.rightArrow)
+                    self.setAsCalibrating(self.switchLabel)
+                    self.setAsNormal(self.ahLabel)
                 }
                 break
             case .Ah:
                 self.isCalibrating = true
                 DispatchQueue.main.async{
-                    self.setAsCalibrating(self.rightArrow)
-                    self.setAsNormal(self.leftArrow)
+                    self.setAsCalibrating(self.ahLabel)
+                    self.setAsNormal(self.switchLabel)
                 }
                 break
-//            case .down:
-//                self.isCalibrating = true
-//                DispatchQueue.main.async{
-//                    self.setAsNormal(self.upArrow)
-//                    self.setAsNormal(self.rightArrow)
-//                    self.setAsNormal(self.leftArrow)
-//                    self.setAsCalibrating(self.downArrow)
-//                }
-//                break
-//
-//            case .right:
-//                self.isCalibrating = true
-//                DispatchQueue.main.async{
-//                    self.setAsNormal(self.upArrow)
-//                    self.setAsCalibrating(self.rightArrow)
-//                    self.setAsNormal(self.leftArrow)
-//                    self.setAsNormal(self.downArrow)
-//                }
-//                break
             case .notCalibrating:
                 self.isCalibrating = false
                 DispatchQueue.main.async{
-                    self.setAsNormal(self.rightArrow)
-                    self.setAsNormal(self.leftArrow)
+                    self.setAsNormal(self.ahLabel)
+                    self.setAsNormal(self.switchLabel)
                 }
                 break
             }
@@ -137,99 +118,7 @@ class ViewController: UIViewController, URLSessionDelegate {
         self.view.endEditing(false)
     }
     
-    // MARK: Core Motion Updates
-//    func startMotionUpdates(){
-//        // some internal inconsistency here: we need to ask the device manager for device
-//
-//        if self.motion.isDeviceMotionAvailable{
-//            self.motion.deviceMotionUpdateInterval = 1.0/200
-//            self.motion.startDeviceMotionUpdates(to: motionOperationQueue, withHandler: self.handleMotion )
-//        }
-//    }
-//
-//    func handleMotion(_ motionData:CMDeviceMotion?, error:Error?){
-//        if let accel = motionData?.userAcceleration {
-//            self.ringBuffer.addNewData(xData: accel.x, yData: accel.y, zData: accel.z)
-//            let mag = fabs(accel.x)+fabs(accel.y)+fabs(accel.z)
-//
-//            DispatchQueue.main.async{
-//                //show magnitude via indicator
-//                self.largeMotionMagnitude.progress = Float(mag)/0.2
-//            }
-//
-//            if mag > self.magValue {
-//                // buffer up a bit more data and then notify of occurrence
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: {
-//                    self.calibrationOperationQueue.addOperation {
-//                        // something large enough happened to warrant
-//                        self.largeMotionEventOccurred()
-//                    }
-//                })
-//            }
-//        }
-//    }
-//
-//
-//    //MARK: Calibration procedure
-//    func largeMotionEventOccurred(){
-//        if(self.isCalibrating){
-//            //send a labeled example
-//            if(self.calibrationStage != .notCalibrating && self.isWaitingForMotionData)
-//            {
-//                self.isWaitingForMotionData = false
-//
-//                // send data to the server with label
-//                sendFeatures(self.ringBuffer.getDataAsVector(),
-//                             withLabel: self.calibrationStage)
-//
-//                self.nextCalibrationStage()
-//            }
-//        }
-//        else
-//        {
-//            if(self.isWaitingForMotionData)
-//            {
-//                self.isWaitingForMotionData = false
-//                //predict a label
-//                getPrediction(self.ringBuffer.getDataAsVector())
-//                // dont predict again for a bit
-//                setDelayedWaitingToTrue(2.0)
-//
-//            }
-//        }
-//    }
-//
-//    func nextCalibrationStage(){
-//        switch self.calibrationStage {
-//        case .notCalibrating:
-//            //start with up arrow
-//            self.calibrationStage = .up
-//            setDelayedWaitingToTrue(1.0)
-//            break
-//        case .up:
-//            //go to right arrow
-//            self.calibrationStage = .right
-//            setDelayedWaitingToTrue(1.0)
-//            break
-//        case .right:
-//            //go to down arrow
-//            self.calibrationStage = .down
-//            setDelayedWaitingToTrue(1.0)
-//            break
-//        case .down:
-//            //go to left arrow
-//            self.calibrationStage = .left
-//            setDelayedWaitingToTrue(1.0)
-//            break
-//
-//        case .left:
-//            //end calibration
-//            self.calibrationStage = .notCalibrating
-//            setDelayedWaitingToTrue(1.0)
-//            break
-//        }
-//    }
-    
+    // MARK: Microphone precessing audio Updates
     func startMicrophoneProcessing(withFps:Double){
         audio.audioManager?.inputBlock = audio.handleMicrophone
         
@@ -244,7 +133,7 @@ class ViewController: UIViewController, URLSessionDelegate {
         if audio.inputBuffer != nil {
             // copy data to swift array
             audio.inputBuffer!.fetchFreshData(&timeData, withNumSamples: Int64(AUDIO_BUFFER_SIZE))
-//            print(self.timeData)
+
             if(timeData[timeData.count-1]>0.03){
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
                     self.calibrationOperationQueue.addOperation {
@@ -254,18 +143,11 @@ class ViewController: UIViewController, URLSessionDelegate {
                 })
             }
 
-            // now take FFT and display it
-//            audio.fftHelper!.performForwardFFT(withData: &timeData,
-//                                         andCopydBMagnitudeToBuffer: &fftData)
+
         }
     }
-//    func handleMicrophone (data:Optional<UnsafeMutablePointer<Float>>, numFrames:UInt32, numChannels: UInt32) {
-//
-//
-//        // copy samples from the microphone into circular buffer
-//        audio.inputBuffer?.addNewFloatData(data, withNumSamples: Int64(numFrames))
-//    }
-    
+
+    //MARK: Calibration procedure
     private func calibrationEventOccurred(){
         if(self.isCalibrating){
             //send a labeled example
@@ -495,10 +377,10 @@ class ViewController: UIViewController, URLSessionDelegate {
         switch response {
 
         case "['Switch']":
-            blinkLabel(leftArrow)
+            blinkLabel(switchLabel)
             break
         case "['Ah']":
-            blinkLabel(rightArrow)
+            blinkLabel(ahLabel)
             break
         default:
             print("Unknown")

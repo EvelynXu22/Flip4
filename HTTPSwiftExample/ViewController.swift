@@ -15,8 +15,8 @@
 //    ifconfig |grep inet   
 // to see what your public facing IP address is, the ip address can be used here
 //let SERVER_URL = "http://erics-macbook-pro.local:8000" // change this for your server name!!!
-let SERVER_URL = "http://192.168.3.7:8000" // change this for your server name!!!
-let AUDIO_BUFFER_SIZE = 1024*4
+let SERVER_URL = "http://192.168.0.93:8000" // change this for your server name!!!
+let AUDIO_BUFFER_SIZE = 800
 
 
 import UIKit
@@ -26,7 +26,6 @@ class ViewController: UIViewController, URLSessionDelegate {
     
     let audio = AudioModel(buffer_size: AUDIO_BUFFER_SIZE)
     var timeData:[Float] = Array.init(repeating: 0.0, count: AUDIO_BUFFER_SIZE)
-    var fftData:[Float] = Array.init(repeating: 0.0, count: AUDIO_BUFFER_SIZE/2)
     
     
     // MARK: Class Properties
@@ -245,18 +244,27 @@ class ViewController: UIViewController, URLSessionDelegate {
         if audio.inputBuffer != nil {
             // copy data to swift array
             audio.inputBuffer!.fetchFreshData(&timeData, withNumSamples: Int64(AUDIO_BUFFER_SIZE))
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: {
-                self.calibrationOperationQueue.addOperation {
-                    // something large enough happened to warrant
-                    self.calibrationEventOccurred()
-                }
-            })
+//            print(self.timeData)
+            if(timeData[timeData.count-1]>0.03){
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+                    self.calibrationOperationQueue.addOperation {
+                        // something large enough happened to warrant
+                        self.calibrationEventOccurred()
+                    }
+                })
+            }
+
             // now take FFT and display it
 //            audio.fftHelper!.performForwardFFT(withData: &timeData,
 //                                         andCopydBMagnitudeToBuffer: &fftData)
         }
     }
+//    func handleMicrophone (data:Optional<UnsafeMutablePointer<Float>>, numFrames:UInt32, numChannels: UInt32) {
+//
+//
+//        // copy samples from the microphone into circular buffer
+//        audio.inputBuffer?.addNewFloatData(data, withNumSamples: Int64(numFrames))
+//    }
     
     private func calibrationEventOccurred(){
         if(self.isCalibrating){
@@ -271,6 +279,8 @@ class ViewController: UIViewController, URLSessionDelegate {
                 sendFeatures(self.timeData, withLabel: self.calibrationStage)
                 
 //                self.nextCalibrationStage()
+                setDelayedWaitingToTrue(2.0)
+                
                 self.calibrationStage = .notCalibrating
             }
         }
@@ -350,7 +360,8 @@ class ViewController: UIViewController, URLSessionDelegate {
         
         // setup core motion handlers
 //        startMotionUpdates()
-        audio.startMicrophoneProcessing(withFps: 10)
+        self.startMicrophoneProcessing(withFps: 10)
+        audio.play()
         
         dsid = 1 // set this and it will update UI
     }
@@ -392,6 +403,7 @@ class ViewController: UIViewController, URLSessionDelegate {
     @IBAction func startCalibration(_ sender: AnyObject) {
         self.isWaitingForMotionData = false // dont do anything yet
         self.calibrationStage = .Switch
+        setDelayedWaitingToTrue(1.0)
 //        nextCalibrationStage()
         
     }
@@ -400,7 +412,7 @@ class ViewController: UIViewController, URLSessionDelegate {
     @IBAction func startCalibrationSecond(_ sender: Any) {
         self.isWaitingForMotionData = false
         self.calibrationStage = .Ah
-        
+        setDelayedWaitingToTrue(1.0)
     }
     
     //MARK: Comm with Server
@@ -481,16 +493,11 @@ class ViewController: UIViewController, URLSessionDelegate {
     
     func displayLabelResponse(_ response:String){
         switch response {
-        case "['up']":
-            blinkLabel(upArrow)
-            break
-        case "['down']":
-            blinkLabel(downArrow)
-            break
-        case "['left']":
+
+        case "['Switch']":
             blinkLabel(leftArrow)
             break
-        case "['right']":
+        case "['Ah']":
             blinkLabel(rightArrow)
             break
         default:

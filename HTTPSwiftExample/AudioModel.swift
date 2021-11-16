@@ -91,6 +91,7 @@ class AudioModel {
             }
         }
         let frequency = Float(maxi) / Float(BUFFER_SIZE) * Float(self.audioManager!.samplingRate)
+        
         return (max,frequency)
     }
     // for sliding max windows, you might be interested in the following: vDSP_vswmax
@@ -167,16 +168,7 @@ class AudioModel {
     // in obj-C it was (^InputBlock)(float *data, UInt32 numFrames, UInt32 numChannels)
     // and in swift this translates to:
     func handleMicrophone (data:Optional<UnsafeMutablePointer<Float>>, numFrames:UInt32, numChannels: UInt32) {
-//        var max:Float = 0.0
-//        if let arrayData = data{
-//            for i in 0..<Int(numFrames){
-//                if(abs(arrayData[i])>max){
-//                    max = abs(arrayData[i])
-//                }
-//            }
-//        }
-//        // can this max operation be made faster??
-//        print(max)
+
         
         // copy samples from the microphone into circular buffer
         self.inputBuffer?.addNewFloatData(data, withNumSamples: Int64(numFrames))
